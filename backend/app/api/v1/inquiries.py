@@ -1,4 +1,4 @@
-from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from app.crud import inquiry as inquiry_crud
@@ -13,7 +13,6 @@ router = APIRouter(prefix="/inquiries", tags=["inquiries"])
 @router.post("", response_model=InquiryRead, status_code=201)
 def create_inquiry(
     payload: InquiryCreate,
-    background_tasks: BackgroundTasks,
     db: Session = Depends(get_db),
 ) -> InquiryRead:
     items: list[CartItemSnapshot] = []
@@ -41,8 +40,10 @@ def create_inquiry(
     inquiry = inquiry_crud.create_inquiry(
         db, payload, items=items or None, total_cents=total_cents if items else None
     )
-    background_tasks.add_task(
-        notify_new_inquiry,
+    # Sent inline (not as a background task): serverless hosts like Netlify Functions
+    # freeze the runtime the instant a response is returned, so a fire-and-forget
+    # task queued after that point is not guaranteed to run.
+    notify_new_inquiry(
         name=inquiry.name,
         email=inquiry.email,
         phone=inquiry.phone,

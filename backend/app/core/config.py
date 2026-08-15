@@ -30,6 +30,13 @@ class Settings(BaseSettings):
     upload_dir: str = "uploads"
     max_upload_size_mb: int = 5
 
+    # When set, uploads go to Supabase Storage instead of local disk — required on
+    # hosts with no persistent/writable filesystem between requests (e.g. Netlify
+    # Functions). Local disk remains the fallback when these are unset.
+    supabase_url: str | None = None
+    supabase_service_key: str | None = None
+    supabase_storage_bucket: str = "product-images"
+
 
 @lru_cache
 def get_settings() -> Settings:

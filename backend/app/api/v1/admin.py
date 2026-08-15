@@ -1,6 +1,3 @@
-import uuid
-from pathlib import Path
-
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, status
 from sqlalchemy.orm import Session
 
@@ -13,6 +10,7 @@ from app.crud import newsletter as newsletter_crud
 from app.crud import product as product_crud
 from app.crud import social_image as social_image_crud
 from app.db.session import get_db
+from app.services.storage import save_upload
 from app.schemas.collection import (
     CollectionCreate,
     CollectionProductAdd,
@@ -225,11 +223,5 @@ async def admin_upload_image(file: UploadFile) -> dict[str, str]:
             detail=f"L'image dépasse {settings.max_upload_size_mb} Mo.",
         )
 
-    upload_dir = Path(settings.upload_dir)
-    upload_dir.mkdir(parents=True, exist_ok=True)
-
-    extension = Path(file.filename or "").suffix.lower() or ".jpg"
-    filename = f"{uuid.uuid4().hex}{extension}"
-    (upload_dir / filename).write_bytes(contents)
-
-    return {"url": f"/uploads/{filename}"}
+    url = save_upload(file.filename or "", file.content_type, contents)
+    return {"url": url}

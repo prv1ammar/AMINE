@@ -1,0 +1,21 @@
+[build]
+  functions = "netlify/functions"
+
+[functions]
+  python_runtime = "python3.11"
+  # The function only bundles its own directory by default — this pulls in the
+  # actual FastAPI app package so `from app.main import app` resolves at runtime.
+  included_files = ["app/**"]
+
+# FastAPI's routes live under /api/v1/*; Mangum's api_gateway_base_path (set in
+# netlify/functions/api.py) strips the /.netlify/functions/api prefix back off,
+# so what FastAPI sees matches its routes exactly, same as running under uvicorn.
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/api/api/:splat"
+  status = 200
+
+[[redirects]]
+  from = "/health"
+  to = "/.netlify/functions/api/health"
+  status = 200
