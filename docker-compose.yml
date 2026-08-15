@@ -13,7 +13,7 @@ services:
   backend:
     build: ./backend
     environment:
-      DATABASE_URL: postgresql+psycopg2://lht:lht@db:5432/lht_store
+      DATABASE_URL: postgresql+psycopg://lht:lht@db:5432/lht_store
       CORS_ORIGINS: '["http://localhost:5173"]'
       SECRET_KEY: change-me-in-production
     depends_on:

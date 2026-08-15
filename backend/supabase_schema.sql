@@ -10,8 +10,8 @@
 -- After running this script, connect the backend with a DATABASE_URL
 -- of the form (use Supabase's "Session pooler" connection string,
 -- Settings → Database → Connection string → URI, then swap the
--- scheme to postgresql+psycopg2):
---   postgresql+psycopg2://postgres.<project-ref>:<password>@<pooler-host>:5432/postgres
+-- scheme to postgresql+psycopg):
+--   postgresql+psycopg://postgres.<project-ref>:<password>@<pooler-host>:5432/postgres
 --
 -- Then run once from backend/: alembic stamp head
 -- (marks the migration history as up to date — no schema change,

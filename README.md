@@ -119,7 +119,7 @@ column-for-column identical to what the SQLAlchemy models expect. To use it:
 2. Get your connection string: **Settings → Database → Connection string → URI** (use the
    "Session pooler" one for a stable IPv4 host), then rewrite its scheme for SQLAlchemy:
    ```
-   postgresql+psycopg2://postgres.<project-ref>:<password>@<pooler-host>:5432/postgres
+   postgresql+psycopg://postgres.<project-ref>:<password>@<pooler-host>:5432/postgres
    ```
 3. Set that as `DATABASE_URL` in `backend/.env`.
 4. From `backend/`, run once: `alembic stamp head` — this doesn't touch the schema, it just
