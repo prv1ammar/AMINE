@@ -1,0 +1,25 @@
+{
+  "name": "lht-store-backend-node",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "netlify dev"
+  },
+  "dependencies": {
+    "postgres": "^3.4.4",
+    "zod": "^3.23.8",
+    "jsonwebtoken": "^9.0.2",
+    "bcryptjs": "^2.4.3",
+    "nodemailer": "^6.9.14"
+  },
+  "devDependencies": {
+    "@netlify/functions": "^2.8.1",
+    "@types/jsonwebtoken": "^9.0.6",
+    "@types/bcryptjs": "^2.4.6",
+    "@types/nodemailer": "^6.4.15",
+    "@types/node": "^20.14.10",
+    "typescript": "^5.5.4",
+    "netlify-cli": "^17.38.0"
+  }
+}
