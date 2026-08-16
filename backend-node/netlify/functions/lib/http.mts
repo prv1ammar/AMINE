@@ -68,11 +68,7 @@ export function withHandler(handler: Handler) {
     } catch (err) {
       if (err instanceof HttpError) return jsonResponse(req, { detail: err.detail }, err.status);
       console.error(err);
-      // TEMPORARY while wiring up the live deployment — surfaces the real error
-      // instead of a generic message. Revert to a generic 500 before this is
-      // treated as production-ready (this can leak internal details otherwise).
-      const message = err instanceof Error ? err.message : String(err);
-      return jsonResponse(req, { detail: `DEBUG: ${message}` }, 500);
+      return jsonResponse(req, { detail: "Une erreur est survenue." }, 500);
     }
   };
 }
