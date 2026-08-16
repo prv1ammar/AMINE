@@ -95,7 +95,11 @@ export function AdminLookbookPage() {
       const { url } = await uploadImage.mutateAsync(file);
       setForm((f) => ({ ...f, image_url: url }));
     } catch (err) {
-      setError(err instanceof ApiError ? String(err.detail) : "Échec de l'envoi de l'image.");
+      setError(
+        err instanceof ApiError
+          ? String(err.detail)
+          : "Échec de l'envoi de l'image — le fichier est peut-être trop volumineux (4 Mo max). Essayez une photo compressée."
+      );
     }
   }
 

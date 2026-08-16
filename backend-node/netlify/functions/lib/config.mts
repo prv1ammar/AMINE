@@ -22,5 +22,9 @@ export const config = {
   supabaseServiceKey: process.env.SUPABASE_SERVICE_KEY || null,
   supabaseStorageBucket: process.env.SUPABASE_STORAGE_BUCKET ?? "product-images",
 
-  maxUploadSizeMb: Number(process.env.MAX_UPLOAD_SIZE_MB ?? 5),
+  // Netlify Functions cap request bodies at 6MB total; binary uploads are
+  // base64-encoded in transit (~30% overhead), so the real ceiling for image
+  // bytes is ~4.5MB. Default stays safely under that so the app's own check
+  // returns a clear error instead of Netlify silently rejecting the request.
+  maxUploadSizeMb: Number(process.env.MAX_UPLOAD_SIZE_MB ?? 4),
 };
