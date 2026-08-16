@@ -11,6 +11,12 @@ export const config = {
   accessTokenExpireMinutes: Number(process.env.ACCESS_TOKEN_EXPIRE_MINUTES ?? 720),
   adminEmail: process.env.ADMIN_EMAIL ?? "hello@lhtstore.com",
 
+  // Resend (preferred — a plain HTTPS call, no SMTP connection to negotiate
+  // from inside a serverless function). Falls back to SMTP below if unset.
+  resendApiKey: process.env.RESEND_API_KEY || null,
+  // Sandbox sender until a domain is verified in Resend — see lib/email.mts.
+  resendFrom: process.env.RESEND_FROM ?? "LHT Store <onboarding@resend.dev>",
+
   smtpHost: process.env.SMTP_HOST || null,
   smtpPort: Number(process.env.SMTP_PORT ?? 587),
   smtpUser: process.env.SMTP_USER || null,

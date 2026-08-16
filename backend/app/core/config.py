@@ -20,6 +20,10 @@ class Settings(BaseSettings):
 
     admin_email: str = "hello@lhtstore.com"
 
+    # Resend (preferred — a plain HTTPS call). Falls back to SMTP below if unset.
+    resend_api_key: str | None = None
+    resend_from: str = "LHT Store <onboarding@resend.dev>"
+
     smtp_host: str | None = None
     smtp_port: int = 587
     smtp_user: str | None = None

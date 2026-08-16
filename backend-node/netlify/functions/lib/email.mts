@@ -16,11 +16,37 @@ function getTransporter() {
   return transporter;
 }
 
-/** Sends a plain-text email. Falls back to logging when SMTP isn't configured (local/dev). */
+async function sendViaResend(to: string, subject: string, body: string): Promise<void> {
+  const response = await fetch("https://api.resend.com/emails", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${config.resendApiKey}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ from: config.resendFrom, to: [to], subject, text: body }),
+  });
+  if (!response.ok) {
+    // Resend's own error text (e.g. "You can only send testing emails to your
+    // own email address" pre-domain-verification) is far more useful than a
+    // generic failure, so surface it rather than swallow it.
+    throw new Error(`Resend API error ${response.status}: ${await response.text()}`);
+  }
+}
+
+/**
+ * Sends a plain-text email. Prefers Resend (a plain HTTPS call — no SMTP
+ * connection to negotiate from inside a serverless function); falls back to
+ * SMTP if Resend isn't configured, then to console logging if neither is.
+ */
 export async function sendEmail({ to, subject, body }: { to: string; subject: string; body: string }): Promise<void> {
+  if (config.resendApiKey) {
+    await sendViaResend(to, subject, body);
+    return;
+  }
+
   const client = getTransporter();
   if (!client) {
-    console.log(`SMTP not configured — logging email instead.\nTo: ${to}\nSubject: ${subject}\n${body}`);
+    console.log(`No email provider configured — logging email instead.\nTo: ${to}\nSubject: ${subject}\n${body}`);
     return;
   }
   await client.sendMail({ from: config.smtpFrom, to, subject, text: body });

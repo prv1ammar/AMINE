@@ -2,16 +2,36 @@ import logging
 import smtplib
 from email.message import EmailMessage
 
+import httpx
+
 from app.core.config import get_settings
 
 logger = logging.getLogger("lht_store.email")
 settings = get_settings()
 
 
+def _send_via_resend(*, to: str, subject: str, body: str) -> None:
+    response = httpx.post(
+        "https://api.resend.com/emails",
+        headers={"Authorization": f"Bearer {settings.resend_api_key}", "Content-Type": "application/json"},
+        json={"from": settings.resend_from, "to": [to], "subject": subject, "text": body},
+        timeout=10.0,
+    )
+    # Resend's own error text (e.g. "You can only send testing emails to your
+    # own email address" pre-domain-verification) is far more useful than a
+    # generic failure, so surface it rather than swallow it.
+    response.raise_for_status()
+
+
 def send_email(*, to: str, subject: str, body: str) -> None:
-    """Send a plain-text email. Falls back to logging when SMTP isn't configured (local/dev)."""
+    """Send a plain-text email. Prefers Resend; falls back to SMTP, then to
+    logging when neither is configured (local/dev)."""
+    if settings.resend_api_key:
+        _send_via_resend(to=to, subject=subject, body=body)
+        return
+
     if not settings.smtp_host:
-        logger.info("SMTP not configured — logging email instead.\nTo: %s\nSubject: %s\n%s", to, subject, body)
+        logger.info("No email provider configured — logging email instead.\nTo: %s\nSubject: %s\n%s", to, subject, body)
         return
 
     message = EmailMessage()
