@@ -4,6 +4,7 @@ export interface Product {
   name: string;
   shape: string;
   price_cents: number;
+  delivery_price_cents: number;
   currency: string;
   tagline: string;
   description: string;
@@ -21,6 +22,7 @@ export interface ProductInput {
   name: string;
   shape: string;
   price_cents: number;
+  delivery_price_cents?: number;
   currency?: string;
   tagline?: string;
   description?: string;

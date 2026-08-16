@@ -16,6 +16,7 @@ type FormState = {
   name: string;
   shape: string;
   price: string;
+  delivery_price: string;
   tagline: string;
   description: string;
   image_placeholder: string;
@@ -32,6 +33,7 @@ const EMPTY_FORM: FormState = {
   name: "",
   shape: "",
   price: "",
+  delivery_price: "0",
   tagline: "",
   description: "",
   image_placeholder: "",
@@ -49,6 +51,7 @@ function productToForm(product: Product): FormState {
     name: product.name,
     shape: product.shape,
     price: (product.price_cents / 100).toString(),
+    delivery_price: (product.delivery_price_cents / 100).toString(),
     tagline: product.tagline,
     description: product.description,
     image_placeholder: product.image_placeholder,
@@ -67,6 +70,7 @@ function formToInput(form: FormState): ProductInput {
     name: form.name.trim(),
     shape: form.shape.trim(),
     price_cents: Math.round(parseFloat(form.price || "0") * 100),
+    delivery_price_cents: Math.round(parseFloat(form.delivery_price || "0") * 100),
     tagline: form.tagline.trim(),
     description: form.description.trim(),
     image_placeholder: form.image_placeholder.trim(),
@@ -206,6 +210,17 @@ export function AdminProductsPage() {
                   required
                   value={form.price}
                   onChange={(e) => setForm((f) => ({ ...f, price: e.target.value }))}
+                />
+              </div>
+              <div className="admin-field">
+                <label htmlFor="p-delivery-price">Frais de livraison (MAD)</label>
+                <input
+                  id="p-delivery-price"
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  value={form.delivery_price}
+                  onChange={(e) => setForm((f) => ({ ...f, delivery_price: e.target.value }))}
                 />
               </div>
             </div>

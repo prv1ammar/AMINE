@@ -6,6 +6,7 @@ class ProductBase(BaseModel):
     name: str
     shape: str
     price_cents: int
+    delivery_price_cents: int = 0
     currency: str = "MAD"
     tagline: str = ""
     description: str = ""
@@ -27,6 +28,7 @@ class ProductUpdate(BaseModel):
     name: str | None = None
     shape: str | None = None
     price_cents: int | None = None
+    delivery_price_cents: int | None = None
     currency: str | None = None
     tagline: str | None = None
     description: str | None = None

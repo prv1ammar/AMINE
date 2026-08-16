@@ -37,6 +37,7 @@ class Inquiry(Base):
         String(80), ForeignKey("products.slug"), nullable=True
     )
     items: Mapped[list | None] = mapped_column(JSON, nullable=True)
+    delivery_cents: Mapped[int | None] = mapped_column(Integer, nullable=True)
     total_cents: Mapped[int | None] = mapped_column(Integer, nullable=True)
     status: Mapped[InquiryStatus] = mapped_column(
         Enum(InquiryStatus), default=InquiryStatus.new, nullable=False

@@ -14,6 +14,7 @@ class Product(Base):
     name: Mapped[str] = mapped_column(String(120), nullable=False)
     shape: Mapped[str] = mapped_column(String(60), nullable=False)
     price_cents: Mapped[int] = mapped_column(Integer, nullable=False)
+    delivery_price_cents: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
     currency: Mapped[str] = mapped_column(String(3), default="MAD", nullable=False)
     tagline: Mapped[str] = mapped_column(String(200), default="", nullable=False)
     description: Mapped[str] = mapped_column(Text, default="", nullable=False)

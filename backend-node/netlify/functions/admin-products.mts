@@ -8,6 +8,7 @@ const ProductCreate = z.object({
   name: z.string(),
   shape: z.string(),
   price_cents: z.number().int(),
+  delivery_price_cents: z.number().int().min(0).default(0),
   currency: z.string().default("MAD"),
   tagline: z.string().default(""),
   description: z.string().default(""),

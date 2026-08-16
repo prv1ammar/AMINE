@@ -13,8 +13,28 @@ function formatCents(cents: number): string {
   );
 }
 
+function DeliveryIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path
+        d="M2 7h11v9H2z M13 10h5l4 3.5V16h-9z"
+        stroke="currentColor"
+        strokeWidth="1.4"
+        strokeLinejoin="round"
+        fill="none"
+      />
+      <circle cx="6.5" cy="17.5" r="1.6" stroke="currentColor" strokeWidth="1.4" fill="none" />
+      <circle cx="17.5" cy="17.5" r="1.6" stroke="currentColor" strokeWidth="1.4" fill="none" />
+    </svg>
+  );
+}
+
 export function CheckoutPage() {
   const { items, subtotalCents, clear } = useCart();
+  // Estimate shown before submitting — the server recomputes this from the DB
+  // at checkout time and that authoritative value is what's actually charged.
+  const deliveryCents = items.reduce((max, line) => Math.max(max, line.product.delivery_price_cents ?? 0), 0);
+  const grandTotalCents = subtotalCents + deliveryCents;
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -51,8 +71,8 @@ export function CheckoutPage() {
           Merci, <em>{data.name}</em>.
         </h1>
         <p className="field__hint" style={{ marginTop: 24, maxWidth: 480 }}>
-          Votre commande de {formatCents(data.total_cents ?? 0)} est bien enregistrée. Nous revenons vers vous sous
-          24 heures ouvrées avec un lien de paiement sécurisé.
+          Votre commande de {formatCents((data.total_cents ?? 0) + (data.delivery_cents ?? 0))} (livraison incluse)
+          est bien enregistrée. Nous revenons vers vous sous 24 heures ouvrées avec un lien de paiement sécurisé.
         </p>
         <Link to="/collection" className="btn-dark" style={{ marginTop: 32, display: "inline-block" }}>
           Continuer mes achats
@@ -115,9 +135,19 @@ export function CheckoutPage() {
               </div>
             ))}
           </div>
+          <div className="checkout-delivery">
+            <span className="checkout-delivery__icon">
+              <DeliveryIcon />
+            </span>
+            <span className="checkout-delivery__label">Livraison</span>
+            <span className="checkout-delivery__price">
+              {deliveryCents > 0 ? formatCents(deliveryCents) : "Offerte"}
+            </span>
+          </div>
+
           <div className="checkout-summary__grand-total">
             <span>Total</span>
-            <span>{formatCents(subtotalCents)}</span>
+            <span>{formatCents(grandTotalCents)}</span>
           </div>
         </div>
 
@@ -165,7 +195,7 @@ export function CheckoutPage() {
             </p>
           )}
           <button type="submit" className="btn-dark" style={{ justifySelf: "start" }} disabled={isPending}>
-            {isPending ? "Envoi…" : `Confirmer — ${formatCents(subtotalCents)}`}
+            {isPending ? "Envoi…" : `Confirmer — ${formatCents(grandTotalCents)}`}
           </button>
         </form>
       </section>

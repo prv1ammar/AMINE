@@ -46,6 +46,7 @@ interface ProductRow {
   slug: string;
   name: string;
   price_cents: number;
+  delivery_price_cents: number;
   is_active: boolean;
 }
 
@@ -57,6 +58,7 @@ export default withHandler(async (req) => {
   // Cart pricing is computed server-side from the DB, never trusted from the client.
   const items: { product_id: number; slug: string; name: string; price_cents: number; quantity: number; line_total_cents: number }[] = [];
   let totalCents = 0;
+  let deliveryCents = 0;
   for (const cartItem of payload.items ?? []) {
     const rows = await sql<ProductRow[]>`select * from products where id = ${cartItem.product_id}`;
     const product = rows[0];
@@ -65,6 +67,8 @@ export default withHandler(async (req) => {
     }
     const lineTotal = product.price_cents * cartItem.quantity;
     totalCents += lineTotal;
+    // One real shipment, one delivery fee — not additive per item.
+    deliveryCents = Math.max(deliveryCents, product.delivery_price_cents);
     items.push({
       product_id: product.id,
       slug: product.slug,
@@ -77,11 +81,11 @@ export default withHandler(async (req) => {
 
   const subjectDb = SUBJECT_VALUE_TO_DB[payload.subject];
   const [inquiry] = await sql`
-    insert into inquiries (name, email, phone, address, subject, message, product_slug, items, total_cents)
+    insert into inquiries (name, email, phone, address, subject, message, product_slug, items, total_cents, delivery_cents)
     values (
       ${payload.name}, ${payload.email}, ${payload.phone ?? null}, ${payload.address ?? null},
       ${subjectDb}, ${payload.message}, ${payload.product_slug ?? null},
-      ${items.length ? sql.json(items) : null}, ${items.length ? totalCents : null}
+      ${items.length ? sql.json(items) : null}, ${items.length ? totalCents : null}, ${items.length ? deliveryCents : null}
     )
     returning *
   `;
@@ -99,6 +103,7 @@ export default withHandler(async (req) => {
       productSlug: inquiry.product_slug,
       items: inquiry.items,
       totalCents: inquiry.total_cents,
+      deliveryCents: inquiry.delivery_cents,
     });
   } catch (err) {
     console.error("notifyNewInquiry failed (order still saved):", err);

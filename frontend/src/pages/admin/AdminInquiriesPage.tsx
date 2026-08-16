@@ -75,7 +75,16 @@ export function AdminInquiriesPage() {
                     )}
                   </td>
                   <td style={{ whiteSpace: "nowrap" }}>
-                    {inquiry.total_cents != null ? <strong>{formatCents(inquiry.total_cents)}</strong> : "—"}
+                    {inquiry.total_cents != null ? (
+                      <>
+                        <strong>{formatCents(inquiry.total_cents + (inquiry.delivery_cents ?? 0))}</strong>
+                        {!!inquiry.delivery_cents && (
+                          <div className="admin-subtitle">dont livraison {formatCents(inquiry.delivery_cents)}</div>
+                        )}
+                      </>
+                    ) : (
+                      "—"
+                    )}
                   </td>
                   <td style={{ maxWidth: 260, whiteSpace: "normal" }}>{inquiry.message || <span className="admin-subtitle">—</span>}</td>
                   <td>

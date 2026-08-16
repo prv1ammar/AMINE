@@ -62,6 +62,7 @@ class InquiryRead(BaseModel):
     message: str
     product_slug: str | None
     items: list[CartItemSnapshot] | None = None
+    delivery_cents: int | None = None
     total_cents: int | None = None
     status: InquiryStatus
     created_at: datetime

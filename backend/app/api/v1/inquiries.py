@@ -19,6 +19,7 @@ def create_inquiry(
 ) -> InquiryRead:
     items: list[CartItemSnapshot] = []
     total_cents = 0
+    delivery_cents = 0
     for cart_item in payload.items or []:
         product = product_crud.get_product_by_id(db, cart_item.product_id)
         if not product or not product.is_active:
@@ -28,6 +29,8 @@ def create_inquiry(
             )
         line_total = product.price_cents * cart_item.quantity
         total_cents += line_total
+        # One real shipment, one delivery fee — not additive per item.
+        delivery_cents = max(delivery_cents, product.delivery_price_cents)
         items.append(
             CartItemSnapshot(
                 product_id=product.id,
@@ -40,7 +43,11 @@ def create_inquiry(
         )
 
     inquiry = inquiry_crud.create_inquiry(
-        db, payload, items=items or None, total_cents=total_cents if items else None
+        db,
+        payload,
+        items=items or None,
+        total_cents=total_cents if items else None,
+        delivery_cents=delivery_cents if items else None,
     )
     # Sent inline (not as a background task): serverless hosts like Netlify Functions
     # freeze the runtime the instant a response is returned, so a fire-and-forget
@@ -58,6 +65,7 @@ def create_inquiry(
             product_slug=inquiry.product_slug,
             items=inquiry.items,
             total_cents=inquiry.total_cents,
+            delivery_cents=inquiry.delivery_cents,
         )
     except Exception:
         logging.getLogger("lht_store.email").exception("notify_new_inquiry failed (order still saved)")

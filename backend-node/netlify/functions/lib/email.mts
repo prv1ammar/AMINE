@@ -42,13 +42,20 @@ export async function notifyNewInquiry(params: {
   productSlug: string | null;
   items: CartItemSnapshot[] | null;
   totalCents: number | null;
+  deliveryCents: number | null;
 }): Promise<void> {
   let itemsBlock = "";
   if (params.items?.length) {
     const lines = params.items
       .map((item) => `  - ${item.quantity} x ${item.name} — ${(item.line_total_cents / 100).toFixed(2)} MAD`)
       .join("\n");
-    itemsBlock = `\nArticles commandés:\n${lines}\nTotal: ${((params.totalCents ?? 0) / 100).toFixed(2)} MAD\n`;
+    const delivery = params.deliveryCents ?? 0;
+    const grandTotal = (params.totalCents ?? 0) + delivery;
+    itemsBlock =
+      `\nArticles commandés:\n${lines}\n` +
+      `Sous-total: ${((params.totalCents ?? 0) / 100).toFixed(2)} MAD\n` +
+      `Livraison: ${(delivery / 100).toFixed(2)} MAD\n` +
+      `Total: ${(grandTotal / 100).toFixed(2)} MAD\n`;
   }
 
   const body =

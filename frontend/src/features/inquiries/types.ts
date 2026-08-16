@@ -37,6 +37,7 @@ export type InquiryStatus = (typeof INQUIRY_STATUSES)[number];
 export interface Inquiry extends InquiryCreate {
   id: number;
   items?: CartItemSnapshot[] | null;
+  delivery_cents?: number | null;
   total_cents?: number | null;
   status: InquiryStatus;
   created_at: string;

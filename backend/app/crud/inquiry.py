@@ -11,12 +11,14 @@ def create_inquiry(
     *,
     items: list[CartItemSnapshot] | None = None,
     total_cents: int | None = None,
+    delivery_cents: int | None = None,
 ) -> Inquiry:
     payload = data.model_dump(exclude={"items"})
     inquiry = Inquiry(
         **payload,
         items=[item.model_dump() for item in items] if items else None,
         total_cents=total_cents,
+        delivery_cents=delivery_cents,
     )
     db.add(inquiry)
     db.commit()

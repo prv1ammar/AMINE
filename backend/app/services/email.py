@@ -39,6 +39,7 @@ def notify_new_inquiry(
     product_slug: str | None,
     items: list[dict] | None = None,
     total_cents: int | None = None,
+    delivery_cents: int | None = None,
 ) -> None:
     items_block = ""
     if items:
@@ -46,7 +47,14 @@ def notify_new_inquiry(
             f"  - {item['quantity']} x {item['name']} — {item['line_total_cents'] / 100:.2f} MAD"
             for item in items
         )
-        items_block = f"\nArticles commandés:\n{lines}\nTotal: {(total_cents or 0) / 100:.2f} MAD\n"
+        delivery = delivery_cents or 0
+        grand_total = (total_cents or 0) + delivery
+        items_block = (
+            f"\nArticles commandés:\n{lines}\n"
+            f"Sous-total: {(total_cents or 0) / 100:.2f} MAD\n"
+            f"Livraison: {delivery / 100:.2f} MAD\n"
+            f"Total: {grand_total / 100:.2f} MAD\n"
+        )
 
     body = (
         f"Nouvelle demande reçue via le site.\n\n"
