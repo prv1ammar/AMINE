@@ -86,17 +86,23 @@ export default withHandler(async (req) => {
     returning *
   `;
 
-  await notifyNewInquiry({
-    name: inquiry.name,
-    email: inquiry.email,
-    phone: inquiry.phone,
-    address: inquiry.address,
-    subject: payload.subject,
-    message: inquiry.message,
-    productSlug: inquiry.product_slug,
-    items: inquiry.items,
-    totalCents: inquiry.total_cents,
-  });
+  // The order is already committed above — a notification failure (bad SMTP
+  // credentials, Gmail hiccup, etc.) must not fail the customer's checkout.
+  try {
+    await notifyNewInquiry({
+      name: inquiry.name,
+      email: inquiry.email,
+      phone: inquiry.phone,
+      address: inquiry.address,
+      subject: payload.subject,
+      message: inquiry.message,
+      productSlug: inquiry.product_slug,
+      items: inquiry.items,
+      totalCents: inquiry.total_cents,
+    });
+  } catch (err) {
+    console.error("notifyNewInquiry failed (order still saved):", err);
+  }
 
   return jsonResponse(req, { ...inquiry, subject: SUBJECT_DB_TO_VALUE[inquiry.subject] }, 201);
 });

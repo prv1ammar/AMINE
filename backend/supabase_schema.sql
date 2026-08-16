@@ -96,6 +96,8 @@ create table if not exists inquiries (
   subject      inquiry_subject not null default 'order',
   message      text not null,
   product_slug varchar(80) references products(slug),
+  items        jsonb,
+  total_cents  integer,
   status       inquiry_status not null default 'new',
   created_at   timestamptz not null default now(),
   updated_at   timestamptz not null default now()
@@ -107,6 +109,32 @@ create table if not exists newsletter_subscribers (
   id         integer generated always as identity primary key,
   email      varchar(255) not null unique,
   created_at timestamptz not null default now()
+);
+
+-- ─── SOCIAL IMAGES (Instagram grid) ──────────────────────────
+create table if not exists social_images (
+  id         integer generated always as identity primary key,
+  caption    varchar(200) not null default '',
+  image_url  varchar(500),
+  is_active  boolean not null default true,
+  sort_order integer not null default 0,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+-- ─── LOOKBOOK ENTRIES ─────────────────────────────────────────
+create table if not exists lookbook_entries (
+  id                integer generated always as identity primary key,
+  eyebrow           varchar(80) not null default '',
+  title             varchar(120) not null,
+  body              text not null default '',
+  image_placeholder varchar(255) not null default '',
+  image_url         varchar(500),
+  link_url          varchar(255) not null default '/collection',
+  is_active         boolean not null default true,
+  sort_order        integer not null default 0,
+  created_at        timestamptz not null default now(),
+  updated_at        timestamptz not null default now()
 );
 
 -- ─── AUTO-UPDATE updated_at ──────────────────────────────────
@@ -128,6 +156,14 @@ create trigger collections_updated_at before update on collections
 
 drop trigger if exists inquiries_updated_at on inquiries;
 create trigger inquiries_updated_at before update on inquiries
+  for each row execute function update_updated_at();
+
+drop trigger if exists social_images_updated_at on social_images;
+create trigger social_images_updated_at before update on social_images
+  for each row execute function update_updated_at();
+
+drop trigger if exists lookbook_entries_updated_at on lookbook_entries;
+create trigger lookbook_entries_updated_at before update on lookbook_entries
   for each row execute function update_updated_at();
 
 -- ============================================================

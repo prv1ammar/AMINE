@@ -1,3 +1,5 @@
+import logging
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
@@ -43,15 +45,20 @@ def create_inquiry(
     # Sent inline (not as a background task): serverless hosts like Netlify Functions
     # freeze the runtime the instant a response is returned, so a fire-and-forget
     # task queued after that point is not guaranteed to run.
-    notify_new_inquiry(
-        name=inquiry.name,
-        email=inquiry.email,
-        phone=inquiry.phone,
-        address=inquiry.address,
-        subject=inquiry.subject.value,
-        message=inquiry.message,
-        product_slug=inquiry.product_slug,
-        items=inquiry.items,
-        total_cents=inquiry.total_cents,
-    )
+    # The order is already committed above — a notification failure (bad SMTP
+    # credentials, provider hiccup, etc.) must not fail the customer's checkout.
+    try:
+        notify_new_inquiry(
+            name=inquiry.name,
+            email=inquiry.email,
+            phone=inquiry.phone,
+            address=inquiry.address,
+            subject=inquiry.subject.value,
+            message=inquiry.message,
+            product_slug=inquiry.product_slug,
+            items=inquiry.items,
+            total_cents=inquiry.total_cents,
+        )
+    except Exception:
+        logging.getLogger("lht_store.email").exception("notify_new_inquiry failed (order still saved)")
     return inquiry
