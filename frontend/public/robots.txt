@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /commande
+
+Sitemap: https://lhtstore.com/sitemap.xml
