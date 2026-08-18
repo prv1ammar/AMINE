@@ -9,6 +9,7 @@ const LINKS = [
   { to: "/admin/demandes", label: "Demandes" },
   { to: "/admin/newsletter", label: "Newsletter" },
   { to: "/admin/instagram", label: "Instagram" },
+  { to: "/admin/chiffres", label: "Chiffres clés" },
 ];
 
 export function AdminLayout() {

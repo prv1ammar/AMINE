@@ -1,7 +1,10 @@
 import { Link } from "react-router-dom";
 import { ImageSlot } from "@/components/ui/ImageSlot";
+import { useStats } from "@/features/stats/hooks";
 
 export function AboutPage() {
+  const { data: stats } = useStats();
+
   return (
     <>
       <section className="page-header">
@@ -40,21 +43,13 @@ export function AboutPage() {
 
       <section className="stats-band">
         <div className="stats-band__grid">
-          <div className="stat">
-            <p className="stat__value">6</p>
-            <p className="eyebrow stat__label">Modèles</p>
-            <p className="stat__body">Chacun sélectionné pour une raison précise</p>
-          </div>
-          <div className="stat">
-            <p className="stat__value">UV400</p>
-            <p className="eyebrow stat__label">Protection</p>
-            <p className="stat__body">Certification intégrale sur tous les verres</p>
-          </div>
-          <div className="stat">
-            <p className="stat__value">30j</p>
-            <p className="eyebrow stat__label">Retours</p>
-            <p className="stat__body">Satisfait ou remboursé, sans condition</p>
-          </div>
+          {(stats ?? []).map((stat) => (
+            <div className="stat" key={stat.id}>
+              <p className="stat__value">{stat.value}</p>
+              {stat.label && <p className="eyebrow stat__label">{stat.label}</p>}
+              {stat.body && <p className="stat__body">{stat.body}</p>}
+            </div>
+          ))}
         </div>
       </section>
     </>

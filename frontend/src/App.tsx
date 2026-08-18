@@ -19,6 +19,7 @@ import { AdminInquiriesPage } from "@/pages/admin/AdminInquiriesPage";
 import { AdminNewsletterPage } from "@/pages/admin/AdminNewsletterPage";
 import { AdminSocialImagesPage } from "@/pages/admin/AdminSocialImagesPage";
 import { AdminLookbookPage } from "@/pages/admin/AdminLookbookPage";
+import { AdminStatsPage } from "@/pages/admin/AdminStatsPage";
 
 export default function App() {
   return (
@@ -46,6 +47,7 @@ export default function App() {
             <Route path="newsletter" element={<AdminNewsletterPage />} />
             <Route path="instagram" element={<AdminSocialImagesPage />} />
             <Route path="lookbook" element={<AdminLookbookPage />} />
+            <Route path="chiffres" element={<AdminStatsPage />} />
           </Route>
         </Route>
       </Routes>

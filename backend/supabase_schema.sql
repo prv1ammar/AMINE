@@ -140,6 +140,18 @@ create table if not exists lookbook_entries (
   updated_at        timestamptz not null default now()
 );
 
+-- ─── STATS (À Propos "6 Modèles / UV400 / 30j" band) ─────────
+create table if not exists stats (
+  id         integer generated always as identity primary key,
+  value      varchar(20) not null,
+  label      varchar(60) not null default '',
+  body       text not null default '',
+  is_active  boolean not null default true,
+  sort_order integer not null default 0,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
 -- ─── AUTO-UPDATE updated_at ──────────────────────────────────
 create or replace function update_updated_at()
 returns trigger language plpgsql as $$
@@ -167,6 +179,10 @@ create trigger social_images_updated_at before update on social_images
 
 drop trigger if exists lookbook_entries_updated_at on lookbook_entries;
 create trigger lookbook_entries_updated_at before update on lookbook_entries
+  for each row execute function update_updated_at();
+
+drop trigger if exists stats_updated_at on stats;
+create trigger stats_updated_at before update on stats
   for each row execute function update_updated_at();
 
 -- ============================================================
