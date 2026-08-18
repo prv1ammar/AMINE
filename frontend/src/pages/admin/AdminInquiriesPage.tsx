@@ -56,10 +56,13 @@ export function AdminInquiriesPage() {
                   <td style={{ whiteSpace: "nowrap" }}>{formatDate(inquiry.created_at)}</td>
                   <td>
                     <strong>{inquiry.name}</strong>
-                    <div className="admin-subtitle">{inquiry.email}</div>
+                    {inquiry.email && <div className="admin-subtitle">{inquiry.email}</div>}
                     {inquiry.phone && <div className="admin-subtitle">{inquiry.phone}</div>}
                   </td>
-                  <td style={{ maxWidth: 220, whiteSpace: "normal" }}>{inquiry.address ?? "—"}</td>
+                  <td style={{ maxWidth: 220, whiteSpace: "normal" }}>
+                    {inquiry.address ?? "—"}
+                    {inquiry.city && <div className="admin-subtitle">{inquiry.city}</div>}
+                  </td>
                   <td>{inquiry.subject}</td>
                   <td style={{ maxWidth: 220, whiteSpace: "normal" }}>
                     {inquiry.items?.length ? (

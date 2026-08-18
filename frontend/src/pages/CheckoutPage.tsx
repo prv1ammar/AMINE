@@ -40,6 +40,7 @@ export function CheckoutPage() {
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [address, setAddress] = useState("");
+  const [city, setCity] = useState("");
   const [message, setMessage] = useState("");
 
   const { mutate, isPending, isSuccess, data, error } = useCreateInquiry();
@@ -52,6 +53,7 @@ export function CheckoutPage() {
         email,
         phone,
         address,
+        city,
         subject: "Commander un modèle",
         message,
         product_slug: null,
@@ -158,27 +160,46 @@ export function CheckoutPage() {
               <input id="co-nom" type="text" autoComplete="name" required value={name} onChange={(e) => setName(e.target.value)} />
             </div>
             <div>
-              <label htmlFor="co-email">Email</label>
-              <input id="co-email" type="email" autoComplete="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
+              <label htmlFor="co-email">Email (optionnel)</label>
+              <input id="co-email" type="email" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} />
             </div>
           </div>
           <div className="contact-layout__row">
             <div>
               <label htmlFor="co-phone">Téléphone</label>
-              <input id="co-phone" type="tel" autoComplete="tel" required value={phone} onChange={(e) => setPhone(e.target.value)} />
-            </div>
-            <div>
-              <label htmlFor="co-address">Adresse de livraison</label>
               <input
-                id="co-address"
-                type="text"
-                autoComplete="street-address"
+                id="co-phone"
+                type="tel"
+                autoComplete="tel"
                 required
-                placeholder="Numéro, rue, ville, code postal"
-                value={address}
-                onChange={(e) => setAddress(e.target.value)}
+                placeholder="06XXXXXXXX"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
               />
             </div>
+            <div>
+              <label htmlFor="co-city">Ville</label>
+              <input
+                id="co-city"
+                type="text"
+                autoComplete="address-level2"
+                required
+                value={city}
+                onChange={(e) => setCity(e.target.value)}
+              />
+            </div>
+          </div>
+          <div>
+            <label htmlFor="co-address">Adresse de livraison</label>
+            <input
+              id="co-address"
+              type="text"
+              autoComplete="street-address"
+              required
+              placeholder="Numéro, rue, quartier, code postal"
+              value={address}
+              onChange={(e) => setAddress(e.target.value)}
+            />
           </div>
           <div>
             <label htmlFor="co-message">Note (optionnel)</label>

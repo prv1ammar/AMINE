@@ -10,12 +10,20 @@ const CartItemInput = z.object({
   quantity: z.number().int().min(1).max(20).default(1),
 });
 
+// Local mobile/landline (0 + 5/6/7 + 8 digits) or international (+212 + same).
+const MOROCCAN_PHONE = /^(?:\+212|0)[5-7]\d{8}$/;
+function normalizePhone(raw: string): string {
+  return raw.replace(/[\s.-]/g, "");
+}
+
 const InquiryCreate = z
   .object({
     name: z.string().min(1).max(120),
-    email: z.string().email(),
+    // Optional — the store operates on phone/address (COD), not email.
+    email: z.union([z.literal(""), z.string().email()]).default(""),
     phone: z.string().max(30).nullish(),
     address: z.string().max(2000).nullish(),
+    city: z.string().max(120).nullish(),
     subject: z.enum(INQUIRY_SUBJECT_VALUES as [string, ...string[]]).default("Commander un modèle"),
     message: z.string().max(4000).default(""),
     product_slug: z.string().nullish(),
@@ -26,6 +34,7 @@ const InquiryCreate = z
       const missing = [
         ["téléphone", data.phone] as const,
         ["adresse", data.address] as const,
+        ["ville", data.city] as const,
       ]
         .filter(([, value]) => !value || !value.trim())
         .map(([label]) => label);
@@ -35,6 +44,12 @@ const InquiryCreate = z
           message: `Merci de préciser votre ${missing.join(" et votre ")} pour passer commande.`,
         });
       }
+    }
+    if (data.phone && !MOROCCAN_PHONE.test(normalizePhone(data.phone))) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Numéro de téléphone invalide — format attendu : 06XXXXXXXX ou +212XXXXXXXXX.",
+      });
     }
     if (!data.items?.length && !data.message.trim()) {
       ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Merci de préciser votre message." });
@@ -81,10 +96,10 @@ export default withHandler(async (req) => {
 
   const subjectDb = SUBJECT_VALUE_TO_DB[payload.subject];
   const [inquiry] = await sql`
-    insert into inquiries (name, email, phone, address, subject, message, product_slug, items, total_cents, delivery_cents)
+    insert into inquiries (name, email, phone, address, city, subject, message, product_slug, items, total_cents, delivery_cents)
     values (
-      ${payload.name}, ${payload.email}, ${payload.phone ?? null}, ${payload.address ?? null},
-      ${subjectDb}, ${payload.message}, ${payload.product_slug ?? null},
+      ${payload.name}, ${payload.email}, ${payload.phone ? normalizePhone(payload.phone) : null}, ${payload.address ?? null},
+      ${payload.city ?? null}, ${subjectDb}, ${payload.message}, ${payload.product_slug ?? null},
       ${items.length ? sql.json(items) : null}, ${items.length ? totalCents : null}, ${items.length ? deliveryCents : null}
     )
     returning *
@@ -95,9 +110,10 @@ export default withHandler(async (req) => {
   try {
     await notifyNewInquiry({
       name: inquiry.name,
-      email: inquiry.email,
+      email: inquiry.email || null,
       phone: inquiry.phone,
       address: inquiry.address,
+      city: inquiry.city,
       subject: payload.subject,
       message: inquiry.message,
       productSlug: inquiry.product_slug,

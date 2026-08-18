@@ -94,6 +94,7 @@ create table if not exists inquiries (
   email        varchar(255) not null,
   phone        varchar(30),
   address      text,
+  city         varchar(120),
   subject      inquiry_subject not null default 'order',
   message      text not null,
   product_slug varchar(80) references products(slug),

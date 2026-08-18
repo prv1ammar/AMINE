@@ -60,9 +60,10 @@ interface CartItemSnapshot {
 
 export async function notifyNewInquiry(params: {
   name: string;
-  email: string;
+  email: string | null;
   phone: string | null;
   address: string | null;
+  city: string | null;
   subject: string;
   message: string;
   productSlug: string | null;
@@ -87,15 +88,20 @@ export async function notifyNewInquiry(params: {
   const body =
     `Nouvelle demande reçue via le site.\n\n` +
     `Nom: ${params.name}\n` +
-    `Email: ${params.email}\n` +
+    `Email: ${params.email || "non précisé"}\n` +
     `Téléphone: ${params.phone || "non précisé"}\n` +
     `Adresse: ${params.address || "non précisée"}\n` +
+    `Ville: ${params.city || "non précisée"}\n` +
     `Sujet: ${params.subject}\n` +
     `Modèle: ${params.productSlug || "non précisé"}\n` +
     `${itemsBlock}\n` +
     `Message:\n${params.message}`;
 
   await sendEmail({ to: config.adminEmail, subject: `[LHT Store] Nouvelle demande — ${params.subject}`, body });
+
+  // Email is optional — the store runs on phone/address (COD), so there's
+  // often nothing to send a confirmation to.
+  if (!params.email) return;
 
   const confirmation =
     `Bonjour ${params.name},\n\n` +

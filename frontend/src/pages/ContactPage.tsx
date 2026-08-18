@@ -14,6 +14,7 @@ export function ContactPage() {
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [address, setAddress] = useState("");
+  const [city, setCity] = useState("");
   const [subject, setSubject] = useState<InquirySubject>(
     productSlug ? "Commander un modèle" : INQUIRY_SUBJECTS[0]
   );
@@ -31,6 +32,7 @@ export function ContactPage() {
         email,
         phone: phone || null,
         address: address || null,
+        city: city || null,
         subject,
         message,
         product_slug: productSlug ?? null,
@@ -41,6 +43,7 @@ export function ContactPage() {
           setEmail("");
           setPhone("");
           setAddress("");
+          setCity("");
           setMessage("");
         },
       }
@@ -117,8 +120,8 @@ export function ContactPage() {
                 <input id="nom" type="text" name="nom" autoComplete="name" required value={name} onChange={(e) => setName(e.target.value)} />
               </div>
               <div>
-                <label htmlFor="email">Email</label>
-                <input id="email" type="email" name="email" autoComplete="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
+                <label htmlFor="email">Email (optionnel)</label>
+                <input id="email" type="email" name="email" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} />
               </div>
             </div>
             <div>
@@ -132,18 +135,33 @@ export function ContactPage() {
               </select>
             </div>
             {isOrder && (
-              <div className="contact-layout__row">
-                <div>
-                  <label htmlFor="phone">Téléphone</label>
-                  <input
-                    id="phone"
-                    type="tel"
-                    name="phone"
-                    autoComplete="tel"
-                    required
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                  />
+              <>
+                <div className="contact-layout__row">
+                  <div>
+                    <label htmlFor="phone">Téléphone</label>
+                    <input
+                      id="phone"
+                      type="tel"
+                      name="phone"
+                      autoComplete="tel"
+                      required
+                      placeholder="06XXXXXXXX"
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value)}
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="ville">Ville</label>
+                    <input
+                      id="ville"
+                      type="text"
+                      name="ville"
+                      autoComplete="address-level2"
+                      required
+                      value={city}
+                      onChange={(e) => setCity(e.target.value)}
+                    />
+                  </div>
                 </div>
                 <div>
                   <label htmlFor="address">Adresse de livraison</label>
@@ -153,12 +171,12 @@ export function ContactPage() {
                     name="address"
                     autoComplete="street-address"
                     required
-                    placeholder="Numéro, rue, ville, code postal"
+                    placeholder="Numéro, rue, quartier, code postal"
                     value={address}
                     onChange={(e) => setAddress(e.target.value)}
                   />
                 </div>
-              </div>
+              </>
             )}
             <div>
               <label htmlFor="message">Message</label>

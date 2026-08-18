@@ -22,9 +22,10 @@ export interface CartItemSnapshot extends CartItemInput {
 
 export interface InquiryCreate {
   name: string;
-  email: string;
+  email?: string;
   phone?: string | null;
   address?: string | null;
+  city?: string | null;
   subject: InquirySubject;
   message: string;
   product_slug?: string | null;
