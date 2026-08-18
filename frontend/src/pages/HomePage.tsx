@@ -17,10 +17,6 @@ const PILLARS = [
     title: "Design Intemporel",
     body: "Des formes épurées qui transcendent les saisons et s'adaptent à tous les styles.",
   },
-  {
-    title: "Livraison Gratuite",
-    body: "Livraison offerte en France métropolitaine, retours facilités sous 30 jours.",
-  },
 ];
 
 function NewsletterForm() {
