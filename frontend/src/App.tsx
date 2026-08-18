@@ -4,6 +4,7 @@ import { RequireAdmin } from "@/components/admin/RequireAdmin";
 import { AdminAuthProvider } from "@/features/admin/AdminAuthContext";
 import { HomePage } from "@/pages/HomePage";
 import { CollectionPage } from "@/pages/CollectionPage";
+import { ProductPage } from "@/pages/ProductPage";
 import { CheckoutPage } from "@/pages/CheckoutPage";
 import { LookbookPage } from "@/pages/LookbookPage";
 import { TarifsPage } from "@/pages/TarifsPage";
@@ -26,6 +27,7 @@ export default function App() {
         <Route element={<Layout />}>
           <Route index element={<HomePage />} />
           <Route path="collection" element={<CollectionPage />} />
+          <Route path="produit/:slug" element={<ProductPage />} />
           <Route path="commande" element={<CheckoutPage />} />
           <Route path="lookbook" element={<LookbookPage />} />
           <Route path="tarifs" element={<TarifsPage />} />

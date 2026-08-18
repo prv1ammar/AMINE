@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { ImageSlot } from "@/components/ui/ImageSlot";
 import { useCart } from "@/features/cart/CartContext";
 import { formatPrice, type Product } from "@/features/products/types";
@@ -17,17 +18,19 @@ export function ProductCard({ product }: { product: Product }) {
 
   return (
     <div className="product-card">
-      <div className="product-card__frame">
+      <Link to={`/produit/${product.slug}`} className="product-card__frame">
         <ImageSlot placeholder={product.image_placeholder} src={toMediaUrl(product.image_url)} alt={product.name} />
         {product.badge && (
           <span className={`product-card__badge${badgeIsOutline ? " product-card__badge--outline" : ""}`}>
             {product.badge}
           </span>
         )}
-      </div>
+      </Link>
       <div className="product-card__row">
         <div>
-          <p className="product-card__name">{product.name}</p>
+          <Link to={`/produit/${product.slug}`} className="product-card__name-link">
+            <p className="product-card__name">{product.name}</p>
+          </Link>
           <p className="product-card__meta">
             {product.shape} • UV400
           </p>
